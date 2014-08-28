@@ -3,8 +3,8 @@
  * version: 1.2.0
  * https://github.com/wenzhixin/bootstrap-table/
  */
-
-!function ($) {
+jQuery(document).ready(function(){
+!function (jQuery) {
 
     'use strict';
 
@@ -34,7 +34,7 @@
 
     var getPropertyFromOther = function (list, from, to, value) {
         var result = '';
-        $.each(list, function (i, item) {
+        jQuery.each(list, function (i, item) {
             if (item[from] === value) {
                 result = item[to];
                 return false;
@@ -45,12 +45,12 @@
     };
 
     var getScrollbarWidth = function () {
-        var inner = $('<p/>').addClass('fixed-table-scroll-inner'),
-            outer = $('<div/>').addClass('fixed-table-scroll-outer'),
+        var inner = jQuery('<p/>').addClass('fixed-table-scroll-inner'),
+            outer = jQuery('<div/>').addClass('fixed-table-scroll-outer'),
             w1, w2;
 
         outer.append(inner);
-        $('body').append(outer);
+        jQuery('body').append(outer);
 
         w1 = inner[0].offsetWidth;
         outer.css('overflow', 'scroll');
@@ -69,8 +69,8 @@
 
     var BootstrapTable = function (el, options) {
         this.options = options;
-        this.$el = $(el);
-        this.$el_ = this.$el.clone();
+        this.jQueryel = jQuery(el);
+        this.jQueryel_ = this.jQueryel.clone();
         this.timeoutId_ = 0;
 
         this.init();
@@ -130,8 +130,8 @@
         },
 
         onAll: function (name, args) {return false;},
-        onClickRow: function (item, $element) {return false;},
-        onDblClickRow: function (item, $element) {return false;},
+        onClickRow: function (item, jQueryelement) {return false;},
+        onDblClickRow: function (item, jQueryelement) {return false;},
         onSort: function (name, order) {return false;},
         onCheck: function (row) {return false;},
         onUncheck: function (row) {return false;},
@@ -184,7 +184,7 @@
     };
 
     BootstrapTable.prototype.initContainer = function () {
-        this.$container = $([
+        this.jQuerycontainer = jQuery([
             '<div class="bootstrap-table">',
                 '<div class="fixed-table-toolbar"></div>',
                 '<div class="fixed-table-container">',
@@ -198,14 +198,14 @@
                 '</div>',
             '</div>'].join(''));
 
-        this.$container.insertAfter(this.$el);
-        this.$container.find('.fixed-table-body').append(this.$el);
-        this.$container.after('<div class="clearfix"></div>');
-        this.$loading = this.$container.find('.fixed-table-loading');
+        this.jQuerycontainer.insertAfter(this.jQueryel);
+        this.jQuerycontainer.find('.fixed-table-body').append(this.jQueryel);
+        this.jQuerycontainer.after('<div class="clearfix"></div>');
+        this.jQueryloading = this.jQuerycontainer.find('.fixed-table-loading');
 
-        this.$el.addClass(this.options.classes);
+        this.jQueryel.addClass(this.options.classes);
         if (this.options.striped) {
-            this.$el.addClass('table-striped');
+            this.jQueryel.addClass('table-striped');
         }
     };
 
@@ -214,24 +214,24 @@
             columns = [],
             data = [];
 
-        this.$header = this.$el.find('thead');
-        if (!this.$header.length) {
-            this.$header = $('<thead></thead>').appendTo(this.$el);
+        this.jQueryheader = this.jQueryel.find('thead');
+        if (!this.jQueryheader.length) {
+            this.jQueryheader = jQuery('<thead></thead>').appendTo(this.jQueryel);
         }
-        if (!this.$header.find('tr').length) {
-            this.$header.append('<tr></tr>');
+        if (!this.jQueryheader.find('tr').length) {
+            this.jQueryheader.append('<tr></tr>');
         }
-        this.$header.find('th').each(function () {
-            var column = $.extend({}, {
-                title: $(this).html(),
-                'class': $(this).attr('class')
-            }, $(this).data());
+        this.jQueryheader.find('th').each(function () {
+            var column = jQuery.extend({}, {
+                title: jQuery(this).html(),
+                'class': jQuery(this).attr('class')
+            }, jQuery(this).data());
 
             columns.push(column);
         });
-        this.options.columns = $.extend({}, columns, this.options.columns);
-        $.each(this.options.columns, function (i, column) {
-            that.options.columns[i] = $.extend({}, BootstrapTable.COLUMN_DEFAULTS, column);
+        this.options.columns = jQuery.extend({}, columns, this.options.columns);
+        jQuery.each(this.options.columns, function (i, column) {
+            that.options.columns[i] = jQuery.extend({}, BootstrapTable.COLUMN_DEFAULTS, column);
         });
 
         // if options.data is setting, do not process tbody data
@@ -239,10 +239,10 @@
             return;
         }
 
-        this.$el.find('tbody tr').each(function () {
+        this.jQueryel.find('tbody tr').each(function () {
             var row = {};
-            $(this).find('td').each(function (i) {
-                row[that.options.columns[i].field] = $(this).html();
+            jQuery(this).find('td').each(function (i) {
+                row[that.options.columns[i].field] = jQuery(this).html();
             });
             data.push(row);
         });
@@ -261,7 +261,7 @@
             events: [],
             sorters: []
         };
-        $.each(this.options.columns, function (i, column) {
+        jQuery.each(this.options.columns, function (i, column) {
             var text = '',
                 style = sprintf('text-align: %s; ', column.align) +
                         sprintf('vertical-align: %s; ', column.valign),
@@ -311,28 +311,28 @@
             html.push('</th>');
         });
 
-        this.$header.find('tr').html(html.join(''));
-        this.$header.find('th').each(function (i) {
-            $(this).data(visibleColumns[i]);
+        this.jQueryheader.find('tr').html(html.join(''));
+        this.jQueryheader.find('th').each(function (i) {
+            jQuery(this).data(visibleColumns[i]);
 
             if (visibleColumns[i].sortable) {
-                $(this).off('click').on('click', $.proxy(that.onSort, that));
+                jQuery(this).off('click').on('click', jQuery.proxy(that.onSort, that));
             }
         });
 
         if (!this.options.showHeader || this.options.cardView) {
-            this.$header.hide();
-            this.$container.find('.fixed-table-header').hide();
-            this.$loading.css('top', 0);
+            this.jQueryheader.hide();
+            this.jQuerycontainer.find('.fixed-table-header').hide();
+            this.jQueryloading.css('top', 0);
         } else {
-            this.$header.show();
-            this.$container.find('.fixed-table-header').show();
-            this.$loading.css('top', '42px');
+            this.jQueryheader.show();
+            this.jQuerycontainer.find('.fixed-table-header').show();
+            this.jQueryloading.css('top', '42px');
         }
 
-        this.$selectAll = this.$header.find('[name="btSelectAll"]');
-        this.$selectAll.off('click').on('click', function () {
-            var checked = $(this).prop('checked');
+        this.jQueryselectAll = this.jQueryheader.find('[name="btSelectAll"]');
+        this.jQueryselectAll.off('click').on('click', function () {
+            var checked = jQuery(this).prop('checked');
             that[checked ? 'checkAll' : 'uncheckAll']();
         });
     };
@@ -351,7 +351,7 @@
     BootstrapTable.prototype.initSort = function () {
         var name = this.options.sortName,
             order = this.options.sortOrder === 'desc' ? -1 : 1,
-            index = $.inArray(this.options.sortName, this.header.fields);
+            index = jQuery.inArray(this.options.sortName, this.header.fields);
 
         if (index !== -1) {
             var sorter = this.header.sorters[index];
@@ -375,20 +375,20 @@
     };
 
     BootstrapTable.prototype.onSort = function (event) {
-        var $this = $(event.currentTarget),
-            $this_ = this.$header.find('th').eq($this.index());
+        var jQuerythis = jQuery(event.currentTarget),
+            jQuerythis_ = this.jQueryheader.find('th').eq(jQuerythis.index());
 
-        this.$header.add(this.$header_).find('span.order').remove();
+        this.jQueryheader.add(this.jQueryheader_).find('span.order').remove();
 
-        if (this.options.sortName === $this.data('field')) {
+        if (this.options.sortName === jQuerythis.data('field')) {
             this.options.sortOrder = this.options.sortOrder === 'asc' ? 'desc' : 'asc';
         } else {
-            this.options.sortName = $this.data('field');
-            this.options.sortOrder = $this.data('order') === 'asc' ? 'desc' : 'asc';
+            this.options.sortName = jQuerythis.data('field');
+            this.options.sortOrder = jQuerythis.data('order') === 'asc' ? 'desc' : 'asc';
         }
         this.trigger('sort', this.options.sortName, this.options.sortOrder);
 
-        $this.add($this_).data('order', this.options.sortOrder)
+        jQuerythis.add(jQuerythis_).data('order', this.options.sortOrder)
             .find('.th-inner').append(this.getCaretHtml());
 
         if (this.options.sidePagination === 'server') {
@@ -403,15 +403,15 @@
         var that = this,
             html = [],
             timeoutId = 0,
-            $keepOpen,
-            $search;
+            jQuerykeepOpen,
+            jQuerysearch;
 
-        this.$toolbar = this.$container.find('.fixed-table-toolbar').html('');
+        this.jQuerytoolbar = this.jQuerycontainer.find('.fixed-table-toolbar').html('');
 
         if (typeof this.options.toolbar === 'string') {
-            $('<div class="bars pull-left"></div>')
-                .appendTo(this.$toolbar)
-                .append($(this.options.toolbar));
+            jQuery('<div class="bars pull-left"></div>')
+                .appendTo(this.jQuerytoolbar)
+                .append(jQuery(this.options.toolbar));
         }
 
         // showColumns, showToggle, showRefresh
@@ -438,7 +438,7 @@
                 '</button>',
                 '<ul class="dropdown-menu" role="menu">');
 
-            $.each(this.options.columns, function (i, column) {
+            jQuery.each(this.options.columns, function (i, column) {
                 if (column.radio || column.checkbox) {
                     return;
                 }
@@ -457,16 +457,16 @@
         html.push('</div>');
 
         if (html.length > 2) {
-            this.$toolbar.append(html.join(''));
+            this.jQuerytoolbar.append(html.join(''));
         }
 
         if (this.options.showRefresh) {
-            this.$toolbar.find('button[name="refresh"]')
-                .off('click').on('click', $.proxy(this.refresh, this));
+            this.jQuerytoolbar.find('button[name="refresh"]')
+                .off('click').on('click', jQuery.proxy(this.refresh, this));
         }
 
         if (this.options.showToggle) {
-            this.$toolbar.find('button[name="toggle"]')
+            this.jQuerytoolbar.find('button[name="toggle"]')
                 .off('click').on('click', function () {
                     that.options.cardView = !that.options.cardView;
                     that.initHeader();
@@ -475,19 +475,19 @@
         }
 
         if (this.options.showColumns) {
-            $keepOpen = this.$toolbar.find('.keep-open');
-            $keepOpen.find('li').off('click').on('click', function (event) {
+            jQuerykeepOpen = this.jQuerytoolbar.find('.keep-open');
+            jQuerykeepOpen.find('li').off('click').on('click', function (event) {
                 event.stopImmediatePropagation();
             });
-            $keepOpen.find('input').off('click').on('click', function () {
-                var $this = $(this),
-                    $items = $keepOpen.find('input').prop('disabled', false);
+            jQuerykeepOpen.find('input').off('click').on('click', function () {
+                var jQuerythis = jQuery(this),
+                    jQueryitems = jQuerykeepOpen.find('input').prop('disabled', false);
 
-                that.options.columns[$this.val()].visible = $this.prop('checked');
+                that.options.columns[jQuerythis.val()].visible = jQuerythis.prop('checked');
                 that.initHeader();
                 that.initBody();
-                if ($items.filter(':checked').length <= that.options.minimumCountColumns) {
-                    $items.filter(':checked').prop('disabled', true);
+                if (jQueryitems.filter(':checked').length <= that.options.minimumCountColumns) {
+                    jQueryitems.filter(':checked').prop('disabled', true);
                 }
             });
         }
@@ -500,18 +500,18 @@
                         this.options.formatSearch()),
                 '</div>');
 
-            this.$toolbar.append(html.join(''));
-            $search = this.$toolbar.find('.search input');
-            $search.off('keyup').on('keyup', function (event) {
+            this.jQuerytoolbar.append(html.join(''));
+            jQuerysearch = this.jQuerytoolbar.find('.search input');
+            jQuerysearch.off('keyup').on('keyup', function (event) {
                 clearTimeout(timeoutId); // doesn't matter if it's 0
-                timeoutId = setTimeout($.proxy(that.onSearch, that), 500, event); // 500ms
+                timeoutId = setTimeout(jQuery.proxy(that.onSearch, that), 500, event); // 500ms
             });
         }
     };
 
     BootstrapTable.prototype.onSearch = function (event) {
         var that = this,
-            text = $.trim($(event.currentTarget).val());
+            text = jQuery.trim(jQuery(event.currentTarget).val());
 
         if (text === this.searchText) {
             return;
@@ -521,7 +521,7 @@
         if (this.options.sidePagination !== 'server') {
             var s = that.searchText.toLowerCase();
 
-            this.data = s ? $.grep(this.options.data, function (item) {
+            this.data = s ? jQuery.grep(this.options.data, function (item) {
                 for (var key in item) {
                     if ((typeof item[key] === 'string' ||
                         typeof item[key] === 'number') &&
@@ -537,7 +537,7 @@
     };
 
     BootstrapTable.prototype.initPagination = function () {
-        this.$pagination = this.$container.find('.fixed-table-pagination');
+        this.jQuerypagination = this.jQuerycontainer.find('.fixed-table-pagination');
 
         if (!this.options.pagination) {
             return;
@@ -545,10 +545,10 @@
         var that = this,
             html = [],
             i, from, to,
-            $pageList,
-            $first, $pre,
-            $next, $last,
-            $number,
+            jQuerypageList,
+            jQueryfirst, jQuerypre,
+            jQuerynext, jQuerylast,
+            jQuerynumber,
             data = this.searchText ? this.data : this.options.data;
 
         if (this.options.sidePagination !== 'server') {
@@ -592,7 +592,7 @@
             pageList = eval(this.options.pageList);
         }
 
-        $.each(pageList, function (i, page) {
+        jQuery.each(pageList, function (i, page) {
             var active = page === that.options.pageSize ? ' class="active"' : '';
             pageNumber.push(sprintf('<li%s><a href="javascript:void(0)">%s</a></li>', active, page));
         });
@@ -634,29 +634,29 @@
                 '</ul>',
             '</div>');
 
-        this.$pagination.html(html.join(''));
+        this.jQuerypagination.html(html.join(''));
 
-        $pageList = this.$pagination.find('.page-list a');
-        $first = this.$pagination.find('.page-first');
-        $pre = this.$pagination.find('.page-pre');
-        $next = this.$pagination.find('.page-next');
-        $last = this.$pagination.find('.page-last');
-        $number = this.$pagination.find('.page-number');
+        jQuerypageList = this.jQuerypagination.find('.page-list a');
+        jQueryfirst = this.jQuerypagination.find('.page-first');
+        jQuerypre = this.jQuerypagination.find('.page-pre');
+        jQuerynext = this.jQuerypagination.find('.page-next');
+        jQuerylast = this.jQuerypagination.find('.page-last');
+        jQuerynumber = this.jQuerypagination.find('.page-number');
 
         if (this.options.pageNumber <= 1) {
-            $first.addClass('disabled');
-            $pre.addClass('disabled');
+            jQueryfirst.addClass('disabled');
+            jQuerypre.addClass('disabled');
         }
         if (this.options.pageNumber >= this.totalPages) {
-            $next.addClass('disabled');
-            $last.addClass('disabled');
+            jQuerynext.addClass('disabled');
+            jQuerylast.addClass('disabled');
         }
-        $pageList.off('click').on('click', $.proxy(this.onPageListChange, this));
-        $first.off('click').on('click', $.proxy(this.onPageFirst, this));
-        $pre.off('click').on('click', $.proxy(this.onPagePre, this));
-        $next.off('click').on('click', $.proxy(this.onPageNext, this));
-        $last.off('click').on('click', $.proxy(this.onPageLast, this));
-        $number.off('click').on('click', $.proxy(this.onPageNumber, this));
+        jQuerypageList.off('click').on('click', jQuery.proxy(this.onPageListChange, this));
+        jQueryfirst.off('click').on('click', jQuery.proxy(this.onPageFirst, this));
+        jQuerypre.off('click').on('click', jQuery.proxy(this.onPagePre, this));
+        jQuerynext.off('click').on('click', jQuery.proxy(this.onPageNext, this));
+        jQuerylast.off('click').on('click', jQuery.proxy(this.onPageLast, this));
+        jQuerynumber.off('click').on('click', jQuery.proxy(this.onPageNumber, this));
     };
 
     BootstrapTable.prototype.updatePagination = function () {
@@ -670,11 +670,11 @@
     };
 
     BootstrapTable.prototype.onPageListChange = function (event) {
-        var $this = $(event.currentTarget);
+        var jQuerythis = jQuery(event.currentTarget);
 
-        $this.parent().addClass('active').siblings().removeClass('active');
-        this.options.pageSize = +$this.text();
-        this.$toolbar.find('.page-size').text(this.options.pageSize);
+        jQuerythis.parent().addClass('active').siblings().removeClass('active');
+        this.options.pageSize = +jQuerythis.text();
+        this.jQuerytoolbar.find('.page-size').text(this.options.pageSize);
         this.updatePagination();
     };
 
@@ -699,10 +699,10 @@
     };
 
     BootstrapTable.prototype.onPageNumber = function (event) {
-        if (this.options.pageNumber === +$(event.currentTarget).text()) {
+        if (this.options.pageNumber === +jQuery(event.currentTarget).text()) {
             return;
         }
-        this.options.pageNumber = +$(event.currentTarget).text();
+        this.options.pageNumber = +jQuery(event.currentTarget).text();
         this.updatePagination();
     };
 
@@ -711,9 +711,9 @@
             html = [],
             data = this.searchText ? this.data : this.options.data;
 
-        this.$body = this.$el.find('tbody');
-        if (!this.$body.length) {
-            this.$body = $('<tbody></tbody>').appendTo(this.$el);
+        this.jQuerybody = this.jQueryel.find('tbody');
+        if (!this.jQuerybody.length) {
+            this.jQuerybody = jQuery('<tbody></tbody>').appendTo(this.jQueryel);
         }
 
         if (this.options.sidePagination === 'server') {
@@ -752,7 +752,7 @@
                 html.push(sprintf('<td colspan="%s">', this.header.fields.length));
             }
 
-            $.each(this.header.fields, function (j, field) {
+            jQuery.each(this.header.fields, function (j, field) {
                 var text = '',
                     value = item[field],
                     type = '',
@@ -807,42 +807,42 @@
                 '</tr>');
         }
 
-        this.$body.html(html.join(''));
+        this.jQuerybody.html(html.join(''));
 
-        this.$container.find('.fixed-table-body').scrollTop(0);
+        this.jQuerycontainer.find('.fixed-table-body').scrollTop(0);
 
-        this.$body.find('tr').off('click').on('click', function () {
-            that.trigger('click-row', that.data[$(this).data('index')], $(this));
+        this.jQuerybody.find('tr').off('click').on('click', function () {
+            that.trigger('click-row', that.data[jQuery(this).data('index')], jQuery(this));
             if (that.options.clickToSelect) {
-                $(this).find(sprintf('[name="%s"]', that.options.selectItemName)).trigger('click');
+                jQuery(this).find(sprintf('[name="%s"]', that.options.selectItemName)).trigger('click');
             }
         });
-        this.$body.find('tr').off('dblclick').on('dblclick', function () {
-            that.trigger('dbl-click-row', that.data[$(this).data('index')], $(this));
+        this.jQuerybody.find('tr').off('dblclick').on('dblclick', function () {
+            that.trigger('dbl-click-row', that.data[jQuery(this).data('index')], jQuery(this));
         });
 
-        this.$selectItem = this.$body.find(sprintf('[name="%s"]', this.options.selectItemName));
-        this.$selectItem.off('click').on('click', function (event) {
+        this.jQueryselectItem = this.jQuerybody.find(sprintf('[name="%s"]', this.options.selectItemName));
+        this.jQueryselectItem.off('click').on('click', function (event) {
             event.stopImmediatePropagation();
-            var checkAll = that.$selectItem.length === that.$selectItem.filter(':checked').length,
-                checked = $(this).prop('checked') || $(this).is(':radio'),
-                row = that.data[$(this).data('index')];
+            var checkAll = that.jQueryselectItem.length === that.jQueryselectItem.filter(':checked').length,
+                checked = jQuery(this).prop('checked') || jQuery(this).is(':radio'),
+                row = that.data[jQuery(this).data('index')];
 
-            that.$selectAll.add(that.$selectAll_).prop('checked', checkAll);
+            that.jQueryselectAll.add(that.jQueryselectAll_).prop('checked', checkAll);
             row[that.header.stateField] = checked;
             that.trigger(checked ? 'check' : 'uncheck', row);
 
             if (that.options.singleSelect) {
-                that.$selectItem.not(this).each(function () {
-                    that.data[$(this).data('index')][that.header.stateField] = false;
+                that.jQueryselectItem.not(this).each(function () {
+                    that.data[jQuery(this).data('index')][that.header.stateField] = false;
                 });
-                that.$selectItem.filter(':checked').not(this).prop('checked', false);
+                that.jQueryselectItem.filter(':checked').not(this).prop('checked', false);
             }
 
-//            $(this).parents('tr')[checked ? 'addClass' : 'removeClass']('selected');
+//            jQuery(this).parents('tr')[checked ? 'addClass' : 'removeClass']('selected');
         });
 
-        $.each(this.header.events, function (i, events) {
+        jQuery.each(this.header.events, function (i, events) {
             if (!events) {
                 return;
             }
@@ -850,16 +850,16 @@
                 events = eval(events);
             }
             for (var key in events) {
-                that.$body.find('tr').each(function () {
-                    var $tr = $(this),
-                        $td = $tr.find('td').eq(i),
+                that.jQuerybody.find('tr').each(function () {
+                    var jQuerytr = jQuery(this),
+                        jQuerytd = jQuerytr.find('td').eq(i),
                         index = key.indexOf(' '),
                         name = key.substring(0, index),
                         el = key.substring(index + 1),
                         func = events[key];
 
-                    $td.find(el).off(name).on(name, function (e) {
-                        var index = $tr.data('index'),
+                    jQuerytd.find(el).off(name).on(name, function (e) {
+                        var index = jQuerytr.data('index'),
                             row = that.data[index],
                             value = row[that.header.fields[i]];
 
@@ -886,7 +886,7 @@
         if (!this.options.url) {
             return;
         }
-        this.$loading.show();
+        this.jQueryloading.show();
 
         if (this.options.queryParamsType === 'limit') {
             params = {
@@ -903,7 +903,7 @@
             data = eval(this.options.queryParams + '(params)');
         }
 
-        $.ajax({
+        jQuery.ajax({
             type: this.options.method,
             url: this.options.url,
             data: data,
@@ -929,7 +929,7 @@
                 that.trigger('load-error', res.status);
             },
             complete: function () {
-                that.$loading.hide();
+                that.jQueryloading.hide();
             }
         });
     };
@@ -943,17 +943,17 @@
     BootstrapTable.prototype.updateRows = function (checked) {
         var that = this;
 
-        this.$selectItem.each(function () {
-            that.data[$(this).data('index')][that.header.stateField] = checked;
+        this.jQueryselectItem.each(function () {
+            that.data[jQuery(this).data('index')][that.header.stateField] = checked;
         });
     };
 
     BootstrapTable.prototype.resetRows = function () {
         var that = this;
 
-        $.each(this.data, function (i, row) {
-            that.$selectAll.prop('checked', false);
-            that.$selectItem.prop('checked', false);
+        jQuery.each(this.data, function (i, row) {
+            that.jQueryselectAll.prop('checked', false);
+            that.jQueryselectItem.prop('checked', false);
             row[that.header.stateField] = false;
         });
     };
@@ -963,47 +963,47 @@
 
         name += '.bs.table';
         this.options[BootstrapTable.EVENTS[name]].apply(this.options, args);
-        this.$el.trigger($.Event(name), args);
+        this.jQueryel.trigger(jQuery.Event(name), args);
 
         this.options.onAll(name, args);
-        this.$el.trigger($.Event('all.bs.table'), [name, args]);
+        this.jQueryel.trigger(jQuery.Event('all.bs.table'), [name, args]);
     };
 
     BootstrapTable.prototype.resetHeader = function () {
         var that = this,
-            $fixedHeader = this.$container.find('.fixed-table-header'),
-            $fixedBody = this.$container.find('.fixed-table-body'),
-            scrollWidth = this.$el.width() > $fixedBody.width() ? getScrollbarWidth() : 0;
+            jQueryfixedHeader = this.jQuerycontainer.find('.fixed-table-header'),
+            jQueryfixedBody = this.jQuerycontainer.find('.fixed-table-body'),
+            scrollWidth = this.jQueryel.width() > jQueryfixedBody.width() ? getScrollbarWidth() : 0;
 
         // fix #61: the hidden table reset header bug.
-        if (this.$el.is(':hidden')) {
+        if (this.jQueryel.is(':hidden')) {
             clearTimeout(this.timeoutId_); // doesn't matter if it's 0
-            this.timeoutId_ = setTimeout($.proxy(this.resetHeader, this), 100); // 100ms
+            this.timeoutId_ = setTimeout(jQuery.proxy(this.resetHeader, this), 100); // 100ms
             return;
         }
 
-        this.$header_ = this.$header.clone(true);
-        this.$selectAll_ = this.$header_.find('[name="btSelectAll"]');
+        this.jQueryheader_ = this.jQueryheader.clone(true);
+        this.jQueryselectAll_ = this.jQueryheader_.find('[name="btSelectAll"]');
 
-        // fix bug: get $el.css('width') error sometime (height = 500)
+        // fix bug: get jQueryel.css('width') error sometime (height = 500)
         setTimeout(function () {
-            $fixedHeader.css({
+            jQueryfixedHeader.css({
                 'height': '37px',
                 'border-bottom': '1px solid #dddddd',
                 'margin-right': scrollWidth
-            }).find('table').css('width', that.$el.css('width'))
-                .html('').attr('class', that.$el.attr('class'))
-                .append(that.$header_);
+            }).find('table').css('width', that.jQueryel.css('width'))
+                .html('').attr('class', that.jQueryel.attr('class'))
+                .append(that.jQueryheader_);
 
-            that.$el.css('margin-top', -that.$header.height());
+            that.jQueryel.css('margin-top', -that.jQueryheader.height());
 
-            that.$body.find('tr:first-child:not(.no-records-found) > *').each(function(i) {
-                that.$header_.find('div.fht-cell').eq(i).width($(this).innerWidth());
+            that.jQuerybody.find('tr:first-child:not(.no-records-found) > *').each(function(i) {
+                that.jQueryheader_.find('div.fht-cell').eq(i).width(jQuery(this).innerWidth());
             });
 
             // horizontal scroll event
-            $fixedBody.off('scroll').on('scroll', function () {
-                $fixedHeader.scrollLeft($(this).scrollLeft());
+            jQueryfixedBody.off('scroll').on('scroll', function () {
+                jQueryfixedHeader.scrollLeft(jQuery(this).scrollLeft());
             });
         });
     };
@@ -1019,21 +1019,21 @@
             this.options.height = params.height;
         }
 
-        this.$selectAll.prop('checked', this.$selectItem.length > 0 &&
-            this.$selectItem.length === this.$selectItem.filter(':checked').length);
+        this.jQueryselectAll.prop('checked', this.jQueryselectItem.length > 0 &&
+            this.jQueryselectItem.length === this.jQueryselectItem.filter(':checked').length);
 
         if (this.options.height) {
-            var toolbarHeight = +this.$toolbar.children().outerHeight(true),
-                paginationHeight = +this.$pagination.children().outerHeight(true),
+            var toolbarHeight = +this.jQuerytoolbar.children().outerHeight(true),
+                paginationHeight = +this.jQuerypagination.children().outerHeight(true),
                 height = this.options.height - toolbarHeight - paginationHeight;
 
-            this.$container.find('.fixed-table-container').css('height', height + 'px');
+            this.jQuerycontainer.find('.fixed-table-container').css('height', height + 'px');
         }
 
         if (this.options.cardView) {
             // remove the element css
-            that.$el.css('margin-top', '0');
-            that.$container.find('.fixed-table-container').css('padding-bottom', '0');
+            that.jQueryel.css('margin-top', '0');
+            that.jQuerycontainer.find('.fixed-table-container').css('padding-bottom', '0');
             return;
         }
 
@@ -1042,7 +1042,7 @@
         }
 
         if (this.options.height && this.options.showHeader) {
-            this.$container.find('.fixed-table-container').css('padding-bottom', '37px');
+            this.jQuerycontainer.find('.fixed-table-container').css('padding-bottom', '37px');
         }
     };
 
@@ -1059,12 +1059,12 @@
 
     BootstrapTable.prototype.mergeCells = function (options) {
         var row = options.index,
-            col = $.inArray(options.field, this.header.fields),
+            col = jQuery.inArray(options.field, this.header.fields),
             rowspan = options.rowspan || 1,
             colspan = options.colspan || 1,
             i, j,
-            $tr = this.$body.find('tr'),
-            $td = $tr.eq(row).find('td').eq(col);
+            jQuerytr = this.jQuerybody.find('tr'),
+            jQuerytd = jQuerytr.eq(row).find('td').eq(col);
 
         if (row < 0 || col < 0 || row >= this.data.length) {
             return;
@@ -1072,50 +1072,50 @@
 
         for (i = row; i < row + rowspan; i++) {
             for (j = col; j < col + colspan; j++) {
-                $tr.eq(i).find('td').eq(j).hide();
+                jQuerytr.eq(i).find('td').eq(j).hide();
             }
         }
 
-        $td.attr('rowspan', rowspan).attr('colspan', colspan).show();
+        jQuerytd.attr('rowspan', rowspan).attr('colspan', colspan).show();
     };
 
     BootstrapTable.prototype.getSelections = function () {
         var that = this;
 
-        return $.grep(this.data, function (row) {
+        return jQuery.grep(this.data, function (row) {
             return row[that.header.stateField];
         });
     };
 
     BootstrapTable.prototype.checkAll = function () {
-        this.$selectAll.add(this.$selectAll_).prop('checked', true);
-        this.$selectItem.prop('checked', true);
+        this.jQueryselectAll.add(this.jQueryselectAll_).prop('checked', true);
+        this.jQueryselectItem.prop('checked', true);
         this.updateRows(true);
         this.trigger('check-all');
     };
 
     BootstrapTable.prototype.uncheckAll = function () {
-        this.$selectAll.add(this.$selectAll_).prop('checked', false);
-        this.$selectItem.prop('checked', false);
+        this.jQueryselectAll.add(this.jQueryselectAll_).prop('checked', false);
+        this.jQueryselectItem.prop('checked', false);
         this.updateRows(false);
         this.trigger('uncheck-all');
     };
 
     BootstrapTable.prototype.destroy = function () {
-        this.$el.insertBefore(this.$container);
-        $(this.options.toolbar).insertBefore(this.$el);
-        this.$container.next().remove();
-        this.$container.remove();
-        this.$el.html(this.$el_.html())
-            .attr('class', this.$el_.attr('class') || ''); // reset the class
+        this.jQueryel.insertBefore(this.jQuerycontainer);
+        jQuery(this.options.toolbar).insertBefore(this.jQueryel);
+        this.jQuerycontainer.next().remove();
+        this.jQuerycontainer.remove();
+        this.jQueryel.html(this.jQueryel_.html())
+            .attr('class', this.jQueryel_.attr('class') || ''); // reset the class
     };
 
     BootstrapTable.prototype.showLoading = function () {
-        this.$loading.show();
+        this.jQueryloading.show();
     };
 
     BootstrapTable.prototype.hideLoading = function () {
-        this.$loading.hide();
+        this.jQueryloading.hide();
     };
 
     BootstrapTable.prototype.refresh = function () {
@@ -1126,7 +1126,7 @@
     // BOOTSTRAP TABLE PLUGIN DEFINITION
     // =======================
 
-    $.fn.bootstrapTable = function (option, _relatedTarget) {
+    jQuery.fn.bootstrapTable = function (option, _relatedTarget) {
         var allowedMethods = [
                 'getSelections',
                 'load', 'append', 'mergeCells',
@@ -1138,13 +1138,13 @@
             value;
 
         this.each(function () {
-            var $this = $(this),
-                data = $this.data('bootstrap.table'),
-                options = $.extend({}, BootstrapTable.DEFAULTS, $this.data(),
+            var jQuerythis = jQuery(this),
+                data = jQuerythis.data('bootstrap.table'),
+                options = jQuery.extend({}, BootstrapTable.DEFAULTS, jQuerythis.data(),
                     typeof option === 'object' && option);
 
             if (typeof option === 'string') {
-                if ($.inArray(option, allowedMethods) < 0) {
+                if (jQuery.inArray(option, allowedMethods) < 0) {
                     throw "Unknown method: " + option;
                 }
 
@@ -1155,27 +1155,29 @@
                 value = data[option](_relatedTarget);
 
                 if (option === 'destroy') {
-                    $this.removeData('bootstrap.table');
+                    jQuerythis.removeData('bootstrap.table');
                 }
             }
 
             if (!data) {
-                $this.data('bootstrap.table', (data = new BootstrapTable(this, options)));
+                jQuerythis.data('bootstrap.table', (data = new BootstrapTable(this, options)));
             }
         });
 
         return typeof value === 'undefined' ? this : value;
     };
 
-    $.fn.bootstrapTable.Constructor = BootstrapTable;
-    $.fn.bootstrapTable.defaults = BootstrapTable.DEFAULTS;
-    $.fn.bootstrapTable.columnDefaults = BootstrapTable.COLUMN_DEFAULTS;
+    jQuery.fn.bootstrapTable.Constructor = BootstrapTable;
+    jQuery.fn.bootstrapTable.defaults = BootstrapTable.DEFAULTS;
+    jQuery.fn.bootstrapTable.columnDefaults = BootstrapTable.COLUMN_DEFAULTS;
 
     // BOOTSTRAP TABLE INIT
     // =======================
 
-    $(function () {
-        $('[data-toggle="table"]').bootstrapTable();
+    jQuery(function () {
+        jQuery('[data-toggle="table"]').bootstrapTable();
     });
 
 }(jQuery);
+
+});
