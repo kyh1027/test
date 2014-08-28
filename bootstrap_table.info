@@ -1,0 +1,7 @@
+name = Bootstrap Tables
+description = Bootstrap tables implementation. https://github.com/wenzhixin/bootstrap-table
+package = Bootstrap
+core = 7.x
+
+stylesheets[all][] = bootstrap-table.css
+scripts[]          = bootstrap-table.js
