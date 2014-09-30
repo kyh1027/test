@@ -4,4 +4,6 @@ package = Bootstrap
 core = 7.x
 
 stylesheets[all][] = bootstrap-table.css
+stylesheets[all][] = bootstrap-table-override.css
+
 scripts[]          = bootstrap-table.js

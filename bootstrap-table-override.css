@@ -1,0 +1,12 @@
+.bootstrap-table .fixed-table-toolbar{
+    display: block;
+    margin-left: 1%;
+    margin-right: 1%;
+    width: 98%;
+}
+.bootstrap-table .fixed-table-container .fixed-table-pagination{
+    display: block;
+    margin-left: 1%;
+    margin-right: 1%;
+    width: 98%;
+}
